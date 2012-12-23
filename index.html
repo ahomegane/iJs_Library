@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>imjs</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<body>
+
+  <h1>iJs selector engine test</h1>
+  
+    <h2>selector</h2>
+
+    <div class="section">
+      <h3>code</h3>
+      <pre class="brush: js;">
+       var _id_selector = ij('#hoge').el;
+       _id_selector[0].style.color = '#00f';
+      </pre>
+      <h3>result</h3>
+      <div id="hoge">&lt;div id="hoge"&gt;&lt;/div&gt;</div>
+    <!-- /section --></div>
+
+    <div class="section">
+      <h3>code</h3>
+      <pre class="brush: js;">
+      	var _class_selector = ij('.hoge').el;
+      	for(var i = 0, l = _class_selector.length; i < l; i++) _class_selector[i].style.color = '#f00';
+      </pre>
+      <h3>result</h3>
+      <div class="hoge">&lt;div class="hoge"&gt;&lt;/div&gt;</div>
+      <div class="hoge">&lt;div class="hoge"&gt;&lt;/div&gt;</div>
+      <div class="hoge">&lt;div class="hoge"&gt;&lt;/div&gt;</div>
+    <!-- /section --></div>
+
+    <div class="section">
+      <h3>code</h3>
+      <pre class="brush: js;">
+      	var _element_selector = ij('span').el;
+        for(var i = 0, l = _element_selector.length; i < l; i++) _element_selector[i].style.color = '#390';
+      </pre>
+      <h3>result</h3>
+      <span>&lt;span&gt;&lt;/span&gt;</span>
+      <span>&lt;span&gt;&lt;/span&gt;</span>
+      <span>&lt;span&gt;&lt;/span&gt;</span>
+    <!-- /section --></div>
+    
+    <div class="section">
+      <h3>code</h3>
+      <pre class="brush: js;">
+        var _find_selector = ij('.findOuter').find('.findInner').el;
+        //or var _find_selector = ij('.findInner', ij('.findOuter')).el;
+        for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
+      </pre>
+      <h3>result</h3>
+      <div class="findInner">&lt;div class="findInner"&gt;&lt;/div&gt;</div>
+      <div class="findOuter">&lt;div class="findOuter"&gt;<div class="findInner">&lt;div class="findInner"&gt;&lt;/div&gt;</div>&lt;/div&gt;</div>
+    <!-- /section --></div>
+
+    <h2>user agent</h2>
+    <p><strong>Is this your useragent.</strong></p>
+    <p><script type="text/javascript">document.write(navigator.userAgent);</script></p>
+    <ul>
+      <li id="lteIE6">lteIE6: <strong></strong></li>
+      <li id="lteIE7">lteIE7: <strong></strong></li>
+      <li id="lteIE8">lteIE8: <strong></strong></li>
+      <li id="IE">IE: <strong></strong></li>
+      <li id="Firefox">Firefox: <strong></strong></li>
+      <li id="Opera">Opera: <strong></strong></li>
+      <li id="Webkit">Webkit: <strong></strong></li>
+      <li id="Mobile">Mobile: <strong></strong></li>
+    </ul>
+
+<script type="text/javascript" src="js/ijs.js"></script>
+
+<!-- syntaxhighlighter -->
+<script type="text/javascript" src="syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link  rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/shCore.css"/>
+<link  rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/shThemeDefault.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+<!-- /syntaxhighlighter -->
+</body>
+</html>
