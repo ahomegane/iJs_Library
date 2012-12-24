@@ -149,14 +149,22 @@
 			this.context = context;
 			this.selector = selector;
 			
-			context = context instanceof IJs.Selectors ? context.el : [doc];
+			//documentオブジェクト(new IJs.Selectors(doc)の前に処理を行うと無限ループになる)
+			if(selector == doc) {
+				this.el = [doc];
+				return this;
+			}
+			
+			context = context instanceof IJs.Selectors ? context : new IJs.Selectors(doc);
 			
 			//browser test
-			var isStandard = doc.querySelectorAll;
-			var elArr = [];
+			var isStandard = doc.querySelectorAll,
+			elArr = [];
 
 			if(isStandard) {//standard
-				for(var i=0,l=context.length; i<l; i++) fn.concat(elArr, fn.obj2Array(context[i].querySelectorAll(selector)));
+				context.each(function() {
+					fn.concat(elArr, fn.obj2Array(this.querySelectorAll(selector)));
+				});
 
 			} else {//legacy
 				if( /^#/.test(selector) ) {//id
@@ -164,8 +172,8 @@
 					fn.concat(elArr, [doc.getElementById(selector)]);
 					
 				} else if( /^\./.test(selector) ) {//class
-					for(var i=0,l=context.length; i<l; i++) {
-						var all = context[i].getElementsByTagName('*'), arr = [];
+					context.each(function() {
+						var all = this.getElementsByTagName('*'), arr = [];
 						selector = selector.replace(/^\./, '');
 						for (var i = 0, l = all.length; i < l; i++) {
 							if (all[i].className === selector) {
@@ -173,11 +181,12 @@
 							}
 						}
 						fn.concat(elArr, arr);
-					}
+					});
 					
 				} else {//tagname
-					for(var i=0,l=context.length; i<l; i++) fn.concat(elArr, context[i].getElementsByTagName(selector));
-
+					context.each(function() {
+						fn.concat(elArr, this.getElementsByTagName(selector));
+					});
 				}
 			}
 			
@@ -185,27 +194,28 @@
 			return this;
 		},
 		
-		on: function(ev, listenerFunc) {
+		//function内のthisはdom element,第１引数にindex番号
+		each: function(func) {
 			if(this.el) {
 				for(var i=0,l=this.el.length; i<l; i++) {
-					fn.addEventListener(this.el[i], ev, listenerFunc);
+					if(typeof func == 'function') func.call(this.el[i],i);
 				}
+			}
+		},
+		
+		on: function(ev, listenerFunc) {
+			if(this.el) {
+				this.each(function(i) {
+					fn.addEventListener(this, ev, listenerFunc);
+				});
 			}
 		},
 		
 		off: function(ev, listenerFunc) {
 			if(this.el) {
-				for(var i=0,l=this.el.length; i<l; i++) {
-					fn.removeEventListener(this.el[i], ev, listenerFunc);
-				}
-			}
-		},
-		
-		each: function(func) {
-			if(this.el) {
-				for(var i=0,l=el.length; i<l; i++) {
-					if(typeof func == 'function') func();
-				}
+				this.each(function() {
+					fn.removeEventListener(this, ev, listenerFunc);
+				});
 			}
 		}
 		
@@ -293,6 +303,9 @@
 	function clickConsole() {
 		console.log('click');
 	}
+	ij('.hoge').each(function() {
+		console.log(this);
+	});
 
   //elemnt
   var _element_selector = ij('span').el;
