@@ -38,12 +38,94 @@
 	*/
 	IJs.Functions = function() {}
 	IJs.Functions.prototype = IJs.prototype = {
+		
+		/** Array */
+		
 		concat: function(a,b) {
 			return Array.prototype.push.apply(a,b);
 		},
+		
 		obj2Array: function(a) {
 			return Array.prototype.slice.call(a);
+		},
+		
+		/** Event */
+		
+		/**
+		* addEventListener IE補完
+		* @param {Object} el 要素ノード(Domオブジェクト)
+		* @param {String} ev イベント名
+		* @param {Function} listenerFunc イベントリスナ関数
+		* @return {void}
+		*/
+		addEventListener: function(el, ev, listenerFunc) {
+			if(el.addEventListener) { //IE以外
+				el.addEventListener(ev, listenerFunc, false);
+			} else if(el.attachEvent) { //IE
+				el.attachEvent('on' + ev, listenerFunc);
+			} else {
+				throw new Error('error: no event listener');
+			}
+		},
+		
+		/**
+		* removeEventListener IE補完
+		* @param {Object} el 要素ノード(Domオブジェクト)
+		* @param {String} ev イベント名
+		* @param {Function} listenerFunc イベントリスナ関数
+		* @return {void}
+		*/
+		removeEventListener: function(el, ev, listenerFunc){
+			if(el.removeEventListener) { //except for IE
+				el.removeEventListener(ev, listenerFunc, false);
+			} else if(el.detachEvent) { //IE
+				el.detachEvent('on' + ev, listenerFunc);
+			} else {
+				throw new Error('error: no event listener');
+			}
+		},
+	
+		/**
+		* stopPropagation IE補完
+		* @param {Object} e イベントオブジェクト
+		* @return {void}
+		*/
+		stopPropagation: function(e) {
+			if(e.stopPropagation) { //except for IE
+				e.stopPropagation();
+			} else if(window.event) { //IE
+				window.event.cancelBubble = true;
+			}
+		},
+	
+		/**
+		* preventDefault IE補完
+		* @param {Object} e イベントオブジェクト
+		* @return {void}
+		*/
+		preventDefault: function(e) {
+			if (e.preventDefault) { //except for IE
+				e.preventDefault();
+			} else if(window.event) { //IE
+				window.event.returnValue = false;
+			}
+		},
+	
+		/** Object */
+		
+		/**
+		* オブジェクトのlength取得
+		* @param {Object} lengthを取得したいオブジェクト
+		* @return {Integer} length
+		*/	
+		getObjLength: function (obj) {
+			var count = 0;
+			for (var prop in obj){
+				count++;
+			}
+			return count;
 		}
+		
 	}
 
 	var fn = new IJs.Functions();
@@ -53,7 +135,7 @@
 	* メソッドチェーンとして使用可能(return this;)
 	*/
 	IJs.Selectors = function(selector, context) {
-		this.el = null;
+		this.el = null;//array
 		this.context = context;
 		this.selector = selector;
 		return this.find(this.selector, this.context);
@@ -62,9 +144,7 @@
 		
 		find: function(selector, context) {
 			//override context for method chain
-			if(this.el) {
-				context = this;
-			}			
+			if(this.el) context = this;
 			//override properties
 			this.context = context;
 			this.selector = selector;
@@ -103,6 +183,30 @@
 			
 			this.el = elArr;
 			return this;
+		},
+		
+		on: function(ev, listenerFunc) {
+			if(this.el) {
+				for(var i=0,l=this.el.length; i<l; i++) {
+					fn.addEventListener(this.el[i], ev, listenerFunc);
+				}
+			}
+		},
+		
+		off: function(ev, listenerFunc) {
+			if(this.el) {
+				for(var i=0,l=this.el.length; i<l; i++) {
+					fn.removeEventListener(this.el[i], ev, listenerFunc);
+				}
+			}
+		},
+		
+		each: function(func) {
+			if(this.el) {
+				for(var i=0,l=el.length; i<l; i++) {
+					if(typeof func == 'function') func();
+				}
+			}
 		}
 		
   }
@@ -182,11 +286,18 @@
   //class
   var _class_selector = ij('.hoge').el;
   for(var i = 0, l = _class_selector.length; i < l; i++) _class_selector[i].style.color = '#f00';
+	
+	//event
+	ij('.hoge').on('click',clickConsole);
+	//ij('.hoge').off('click',clickConsole);
+	function clickConsole() {
+		console.log('click');
+	}
 
   //elemnt
   var _element_selector = ij('span').el;
   for(var i = 0, l = _element_selector.length; i < l; i++) _element_selector[i].style.color = '#390';
-
+	
 	//find
 	var _find_selector = ij('.findOuter').find('.findInner').el;
 	//var _find_selector = ij('.findInner', ij('.findOuter')).el;
