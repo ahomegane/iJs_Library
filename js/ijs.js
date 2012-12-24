@@ -1,3 +1,17 @@
+if(!window.console){
+		window.console = {};
+		window.console.log = function(c){
+						return c;
+		};
+}
+
+/**
+* memo:
+* ・createElement
+* ・selector複数
+* ・extend
+*/
+
 /**
 * @fileOverview iJs JavaScript Library
 * @name ijs.js
@@ -223,7 +237,7 @@
   }
 
   /**
-  * ロード時実行するメソッド
+  * ロード時に実行するメソッド
   * IJs.initialize時に実行
   */
   IJs.Onload = function(conf) {}
@@ -244,6 +258,7 @@
     return this.init();
   }
   IJs.Device.prototype = {
+			
     init: function() {
       switch(this.detectBrowserType) {
         case 'ua':
@@ -394,13 +409,6 @@
 
 //test
 (function(){
-
-  if(!window.console){
-    window.console = {};
-    window.console.log = function(c){
-        return c;
-    };
-  }
   
   /**
   * selector
