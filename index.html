@@ -14,7 +14,7 @@
     <div class="section">
       <h3>code</h3>
       <pre class="brush: js;">
-       var _id_selector = ij('#hoge').el;
+       var _id_selector = ij('#hoge')[0];
        _id_selector[0].style.color = '#00f';
       </pre>
       <h3>result</h3>
@@ -24,7 +24,7 @@
     <div class="section">
       <h3>code</h3>
       <pre class="brush: js;">
-      	var _class_selector = ij('.hoge').el;
+      	var _class_selector = ij('.hoge')[0];
       	for(var i = 0, l = _class_selector.length; i < l; i++) _class_selector[i].style.color = '#f00';
       </pre>
       <h3>result</h3>
@@ -36,7 +36,7 @@
     <div class="section">
       <h3>code</h3>
       <pre class="brush: js;">
-      	var _element_selector = ij('span').el;
+      	var _element_selector = ij('span')[0];
         for(var i = 0, l = _element_selector.length; i < l; i++) _element_selector[i].style.color = '#390';
       </pre>
       <h3>result</h3>
@@ -48,8 +48,8 @@
     <div class="section">
       <h3>code</h3>
       <pre class="brush: js;">
-        var _find_selector = ij('.findOuter').find('.findInner').el;
-        //or var _find_selector = ij('.findInner', ij('.findOuter')).el;
+        var _find_selector = ij('.findOuter').find('.findInner')[0];
+        //or var _find_selector = ij('.findInner', ij('.findOuter'))[0];
         for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
       </pre>
       <h3>result</h3>
