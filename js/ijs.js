@@ -8,8 +8,8 @@ if(!window.console){
 /**
 * memo:
 * ・createElement
-* ・selector複数
 * ・extend
+* ・ready
 */
 
 /**
@@ -62,7 +62,10 @@ if(!window.console){
     },
     
     objToArray: function(a) {
-      return Array.prototype.slice.call(a);
+      //Array.prototype.slice.call(a); not work lteIe8 
+      var rv = Array(a.length);
+      for(i = 0, l=rv.length; i < l; i++) { rv[i] = a[i]; }
+      return rv;
     },
 
     /** Event */
@@ -151,7 +154,7 @@ if(!window.console){
   * メソッドチェーンとして使用可能(return this;)
   */
   IJs.Selectors = function(selector, context) {
-    this[0] = null;//array
+    this[0] = null;//dom obj {Array}
     this.context = context;
     this.selector = selector;
     return this.find(this.selector, this.context);
@@ -159,53 +162,81 @@ if(!window.console){
   IJs.Selectors.prototype = {
     
     find: function(selector, context) {
+			//selector string cleanup
+			if(typeof selector == 'string') {
+				selector = selector.replace(/(?:\s)+$/,'').replace(/^(?:\s)+/,'');
+			}
+
       //override context for method chain
       if(this[0]) context = this;
       //override properties
       this.context = context;
       this.selector = selector;
-      
+
       //documentオブジェクト(new IJs.Selectors(doc)の前に処理を行うと無限ループになる)
       if(selector == doc) {
         this[0] = [doc];
         return this;
       }
-      
+
       context = context instanceof IJs.Selectors ? context : new IJs.Selectors(doc);
-      
+
       //browser test
       var isStandard = doc.querySelectorAll,
       elArr = [];
 
-      if(isStandard) {//standard
+			//standard
+      if(isStandard) {
         context.each(function() {
           fn.concat(elArr, fn.objToArray(this.querySelectorAll(selector)));
         });
 
-      } else {//legacy
-        if( /^#/.test(selector) ) {//id
-          selector = selector.replace(/^#/, '');
-          fn.concat(elArr, [doc.getElementById(selector)]);
-          
-        } else if( /^\./.test(selector) ) {//class
-          context.each(function() {
-            var all = this.getElementsByTagName('*'), arr = [];
-            selector = selector.replace(/^\./, '');
-            for (var i = 0, l = all.length; i < l; i++) {
-              if (all[i].className === selector) {
-                arr.push(all[i]);
-              }
-            }
-            fn.concat(elArr, arr);
-          });
-          
-        } else {//tagname
-          context.each(function() {
-            fn.concat(elArr, this.getElementsByTagName(selector));
-          });
-        }
+			//legacy
+      } else {
+				selector = selector.split(' ');
+				
+				if(selector.length > 1) {//ij('.foo .bar');
+				
+					//#から始まる文字列からをfindの対象とする
+					for(var i=selector.length-1,l=-1; i>l; i--) {
+						if(/^#/.test(selector[i])) {
+							selector = selector.slice(i);
+							break;
+						}
+					}
+					//find loop
+					for(var i=0,l=selector.length; i<l; i++) {
+						this.find(selector[i]);
+					}
+					return true;
+					
+				} else {//ij('.foo');
+					selector = selector[0];
+					
+					if(/^#/.test(selector)) {//id
+						selector = selector.replace(/^#/, '');
+						fn.concat(elArr, [doc.getElementById(selector)]);
+						
+					} else if(/^\./.test(selector)) {//class
+						context.each(function() {
+							var all = this.getElementsByTagName('*'), arr = [];
+							selector = selector.replace(/^\./, '');
+							for (var i = 0, l = all.length; i < l; i++) {
+								if (all[i].className === selector) {
+									arr.push(all[i]);
+								}
+							}
+							fn.concat(elArr, arr);
+						});
+						
+					} else {//tagname
+						context.each(function() {
+							fn.concat(elArr, this.getElementsByTagName(selector));
+						});
+					}
+
+				}
       }
-      
       this[0] = elArr;
       return this;
     },
@@ -399,7 +430,7 @@ if(!window.console){
   IJs.prototype.initialize = function() {
     var deviceObj = new IJs.Device(conf);
     this.browser = deviceObj.data.browser;
-    this.device = deviceObj.data.dev;
+    this.device = deviceObj.data.device;
   }
 
   window.ij = ij;
@@ -428,8 +459,8 @@ if(!window.console){
     console.log('click');
   }
   ij('.hoge').each(function(index) {
-    console.log(index);
-    console.log(this);
+    //console.log(index);
+    //console.log(this);
   });
 
   //elemnt
@@ -439,7 +470,8 @@ if(!window.console){
   //find
   var _find_selector = ij('.findOuter').find('.findInner')[0];
   //var _find_selector = ij('.findInner', ij('.findOuter'))[0];
-  for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
+  //var _find_selector = ij('.findOuter .findInner')[0];
+	for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
   
   /**
   * browser
