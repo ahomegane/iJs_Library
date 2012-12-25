@@ -162,10 +162,10 @@ if(!window.console){
   IJs.Selectors.prototype = {
     
     find: function(selector, context) {
-			//selector string cleanup
-			if(typeof selector == 'string') {
-				selector = selector.replace(/(?:\s)+$/,'').replace(/^(?:\s)+/,'');
-			}
+      //selector string cleanup
+      if(typeof selector == 'string') {
+        selector = selector.replace(/(?:\s)+$/,'').replace(/^(?:\s)+/,'');
+      }
 
       //override context for method chain
       if(this[0]) context = this;
@@ -185,57 +185,57 @@ if(!window.console){
       var isStandard = doc.querySelectorAll,
       elArr = [];
 
-			//standard
+      //standard
       if(isStandard) {
         context.each(function() {
           fn.concat(elArr, fn.objToArray(this.querySelectorAll(selector)));
         });
 
-			//legacy
+      //legacy
       } else {
-				selector = selector.split(' ');
-				
-				if(selector.length > 1) {//ij('.foo .bar');
-				
-					//#から始まる文字列からをfindの対象とする
-					for(var i=selector.length-1,l=-1; i>l; i--) {
-						if(/^#/.test(selector[i])) {
-							selector = selector.slice(i);
-							break;
-						}
-					}
-					//find loop
-					for(var i=0,l=selector.length; i<l; i++) {
-						this.find(selector[i]);
-					}
-					return true;
-					
-				} else {//ij('.foo');
-					selector = selector[0];
-					
-					if(/^#/.test(selector)) {//id
-						selector = selector.replace(/^#/, '');
-						fn.concat(elArr, [doc.getElementById(selector)]);
-						
-					} else if(/^\./.test(selector)) {//class
-						context.each(function() {
-							var all = this.getElementsByTagName('*'), arr = [];
-							selector = selector.replace(/^\./, '');
-							for (var i = 0, l = all.length; i < l; i++) {
-								if (all[i].className === selector) {
-									arr.push(all[i]);
-								}
-							}
-							fn.concat(elArr, arr);
-						});
-						
-					} else {//tagname
-						context.each(function() {
-							fn.concat(elArr, this.getElementsByTagName(selector));
-						});
-					}
+        selector = selector.split(' ');
+        
+        if(selector.length > 1) {//ij('.foo .bar');
+        
+          //#から始まる文字列からをfindの対象とする
+          for(var i=selector.length-1,l=-1; i>l; i--) {
+            if(/^#/.test(selector[i])) {
+              selector = selector.slice(i);
+              break;
+            }
+          }
+          //find loop
+          for(var i=0,l=selector.length; i<l; i++) {
+            this.find(selector[i]);
+          }
+          return true;
+          
+        } else {//ij('.foo');
+          selector = selector[0];
+          
+          if(/^#/.test(selector)) {//id
+            selector = selector.replace(/^#/, '');
+            fn.concat(elArr, [doc.getElementById(selector)]);
+            
+          } else if(/^\./.test(selector)) {//class
+            context.each(function() {
+              var all = this.getElementsByTagName('*'), arr = [];
+              selector = selector.replace(/^\./, '');
+              for (var i = 0, l = all.length; i < l; i++) {
+                if (all[i].className === selector) {
+                  arr.push(all[i]);
+                }
+              }
+              fn.concat(elArr, arr);
+            });
+            
+          } else {//tagname
+            context.each(function() {
+              fn.concat(elArr, this.getElementsByTagName(selector));
+            });
+          }
 
-				}
+        }
       }
       this[0] = elArr;
       return this;
@@ -471,7 +471,7 @@ if(!window.console){
   var _find_selector = ij('.findOuter').find('.findInner')[0];
   //var _find_selector = ij('.findInner', ij('.findOuter'))[0];
   //var _find_selector = ij('.findOuter .findInner')[0];
-	for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
+  for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
   
   /**
   * browser
