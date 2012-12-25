@@ -7,9 +7,9 @@ if(!window.console){
 
 /**
 * memo:
-* EcreateElement
-* Eselector•¡”
-* Eextend
+* ãƒ»createElement
+* ãƒ»selectorè¤‡æ•°
+* ãƒ»extend
 */
 
 /**
@@ -29,8 +29,8 @@ if(!window.console){
   var doc = document;
 
   /**
-  * ijƒtƒ@ƒ“ƒNƒVƒ‡ƒ“ ex.ij('selector');
-  * window.ij = ij ‚Æ‚µ‚ÄijƒIƒuƒWƒFƒNƒg‚ÌŠO•”ƒCƒ“ƒ^[ƒtƒF[ƒX‚Æ‚·‚é
+  * ijãƒ•ã‚¡ãƒ³ã‚¯ã‚·ãƒ§ãƒ³ ex.ij('selector');
+  * window.ij = ij ã¨ã—ã¦ijã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å¤–éƒ¨ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã¨ã™ã‚‹
   */
   var ij = function(selector, context){
     if(selector) {
@@ -41,16 +41,16 @@ if(!window.console){
   }
   
   /**
-  * IJsƒIƒuƒWƒFƒNƒg
-  * window.iJs = new IJs(); ‚Æ‚µ‚ÄŠO•”ƒCƒ“ƒ^[ƒtƒF[ƒX‚Æ‚·‚é
+  * IJsã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+  * window.iJs = new IJs(); ã¨ã—ã¦å¤–éƒ¨ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã¨ã™ã‚‹
   */
   var IJs = function() {
     return this.initialize();
   }
 
   /**
-  * ŠO•”‚©‚çQÆ‚·‚éƒƒ\ƒbƒh
-  * prototype‚ğIJs‚Æ‹¤—L‚·‚é
+  * å¤–éƒ¨ã‹ã‚‰å‚ç…§ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+  * prototypeã‚’IJsã¨å…±æœ‰ã™ã‚‹
   */
   IJs.Functions = function() {}
   IJs.Functions.prototype = IJs.prototype = {
@@ -61,21 +61,21 @@ if(!window.console){
       return Array.prototype.push.apply(a,b);
     },
     
-    obj2Array: function(a) {
+    objToArray: function(a) {
       return Array.prototype.slice.call(a);
     },
-    
+
     /** Event */
     
     /**
-    * addEventListener IE•âŠ®
-    * @param {Object} el —v‘fƒm[ƒh(DomƒIƒuƒWƒFƒNƒg)
-    * @param {String} ev ƒCƒxƒ“ƒg–¼
-    * @param {Function} listenerFunc ƒCƒxƒ“ƒgƒŠƒXƒiŠÖ”
+    * addEventListener IEè£œå®Œ
+    * @param {Object} el è¦ç´ ãƒãƒ¼ãƒ‰(Domã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ)
+    * @param {String} ev ã‚¤ãƒ™ãƒ³ãƒˆå
+    * @param {Function} listenerFunc ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒŠé–¢æ•°
     * @return {void}
     */
     addEventListener: function(el, ev, listenerFunc) {
-      if(el.addEventListener) { //IEˆÈŠO
+      if(el.addEventListener) { //IEä»¥å¤–
         el.addEventListener(ev, listenerFunc, false);
       } else if(el.attachEvent) { //IE
         el.attachEvent('on' + ev, listenerFunc);
@@ -85,10 +85,10 @@ if(!window.console){
     },
     
     /**
-    * removeEventListener IE•âŠ®
-    * @param {Object} el —v‘fƒm[ƒh(DomƒIƒuƒWƒFƒNƒg)
-    * @param {String} ev ƒCƒxƒ“ƒg–¼
-    * @param {Function} listenerFunc ƒCƒxƒ“ƒgƒŠƒXƒiŠÖ”
+    * removeEventListener IEè£œå®Œ
+    * @param {Object} el è¦ç´ ãƒãƒ¼ãƒ‰(Domã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ)
+    * @param {String} ev ã‚¤ãƒ™ãƒ³ãƒˆå
+    * @param {Function} listenerFunc ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒŠé–¢æ•°
     * @return {void}
     */
     removeEventListener: function(el, ev, listenerFunc){
@@ -102,8 +102,8 @@ if(!window.console){
     },
   
     /**
-    * stopPropagation IE•âŠ®
-    * @param {Object} e ƒCƒxƒ“ƒgƒIƒuƒWƒFƒNƒg
+    * stopPropagation IEè£œå®Œ
+    * @param {Object} e ã‚¤ãƒ™ãƒ³ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     * @return {void}
     */
     stopPropagation: function(e) {
@@ -115,8 +115,8 @@ if(!window.console){
     },
   
     /**
-    * preventDefault IE•âŠ®
-    * @param {Object} e ƒCƒxƒ“ƒgƒIƒuƒWƒFƒNƒg
+    * preventDefault IEè£œå®Œ
+    * @param {Object} e ã‚¤ãƒ™ãƒ³ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     * @return {void}
     */
     preventDefault: function(e) {
@@ -130,11 +130,11 @@ if(!window.console){
     /** Object */
     
     /**
-    * ƒIƒuƒWƒFƒNƒg‚Ìlengthæ“¾
-    * @param {Object} length‚ğæ“¾‚µ‚½‚¢ƒIƒuƒWƒFƒNƒg
+    * ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®lengthå–å¾—
+    * @param {Object} lengthã‚’å–å¾—ã—ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     * @return {Integer} length
     */  
-    getObjLength: function (obj) {
+    countObjLength: function (obj) {
       var count = 0;
       for (var prop in obj){
         count++;
@@ -147,11 +147,11 @@ if(!window.console){
   var fn = new IJs.Functions();
 
   /**
-  * ƒZƒŒƒNƒ^[ƒGƒ“ƒWƒ“
-  * ƒƒ\ƒbƒhƒ`ƒF[ƒ“‚Æ‚µ‚Äg—p‰Â”\(return this;)
+  * ã‚»ãƒ¬ã‚¯ã‚¿ãƒ¼ã‚¨ãƒ³ã‚¸ãƒ³
+  * ãƒ¡ã‚½ãƒƒãƒ‰ãƒã‚§ãƒ¼ãƒ³ã¨ã—ã¦ä½¿ç”¨å¯èƒ½(return this;)
   */
   IJs.Selectors = function(selector, context) {
-    this.el = null;//array
+    this[0] = null;//array
     this.context = context;
     this.selector = selector;
     return this.find(this.selector, this.context);
@@ -160,14 +160,14 @@ if(!window.console){
     
     find: function(selector, context) {
       //override context for method chain
-      if(this.el) context = this;
+      if(this[0]) context = this;
       //override properties
       this.context = context;
       this.selector = selector;
       
-      //documentƒIƒuƒWƒFƒNƒg(new IJs.Selectors(doc)‚Ì‘O‚Éˆ—‚ğs‚¤‚Æ–³ŒÀƒ‹[ƒv‚É‚È‚é)
+      //documentã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ(new IJs.Selectors(doc)ã®å‰ã«å‡¦ç†ã‚’è¡Œã†ã¨ç„¡é™ãƒ«ãƒ¼ãƒ—ã«ãªã‚‹)
       if(selector == doc) {
-        this.el = [doc];
+        this[0] = [doc];
         return this;
       }
       
@@ -179,7 +179,7 @@ if(!window.console){
 
       if(isStandard) {//standard
         context.each(function() {
-          fn.concat(elArr, fn.obj2Array(this.querySelectorAll(selector)));
+          fn.concat(elArr, fn.objToArray(this.querySelectorAll(selector)));
         });
 
       } else {//legacy
@@ -206,21 +206,21 @@ if(!window.console){
         }
       }
       
-      this.el = elArr;
+      this[0] = elArr;
       return this;
     },
     
-    //function“à‚Ìthis‚Ídom element,‘æ‚Pˆø”‚Éindex”Ô†
+    //functionå†…ã®thisã¯dom element,ç¬¬ï¼‘å¼•æ•°ã«indexç•ªå·
     each: function(func) {
-      if(this.el) {
-        for(var i=0,l=this.el.length; i<l; i++) {
-          if(typeof func == 'function') func.call(this.el[i],i);
+      if(this[0]) {
+        for(var i=0,l=this[0].length; i<l; i++) {
+          if(typeof func == 'function') func.call(this[0][i],i);
         }
       }
     },
     
     on: function(ev, listenerFunc) {
-      if(this.el) {
+      if(this[0]) {
         this.each(function(i) {
           fn.addEventListener(this, ev, listenerFunc);
         });
@@ -228,7 +228,7 @@ if(!window.console){
     },
     
     off: function(ev, listenerFunc) {
-      if(this.el) {
+      if(this[0]) {
         this.each(function() {
           fn.removeEventListener(this, ev, listenerFunc);
         });
@@ -237,16 +237,16 @@ if(!window.console){
   }
 
   /**
-  * ƒ[ƒh‚ÉÀs‚·‚éƒƒ\ƒbƒh
-  * IJs.initialize‚ÉÀs
+  * ãƒ­ãƒ¼ãƒ‰æ™‚ã«å®Ÿè¡Œã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+  * IJs.initializeæ™‚ã«å®Ÿè¡Œ
   */
   IJs.Onload = function(conf) {}
   IJs.Onload.prototype = {
   }
 
   /**
-  * ƒ†[ƒU[ŠÂ‹«ƒf[ƒ^‚Ìæ“¾
-  * IJs.initialize‚ÉÀs
+  * ãƒ¦ãƒ¼ã‚¶ãƒ¼ç’°å¢ƒãƒ‡ãƒ¼ã‚¿ã®å–å¾—
+  * IJs.initializeæ™‚ã«å®Ÿè¡Œ
   */
   IJs.Device = function(conf) {
     this.detectBrowserType = conf.detectBrowserType;
@@ -281,7 +281,7 @@ if(!window.console){
     },
     
     /**
-    * UA‚©‚çSP/PC/TB‚ÌƒfƒoƒCƒXƒ^ƒCƒv‚ğæ“¾
+    * UAã‹ã‚‰SP/PC/TBã®ãƒ‡ãƒã‚¤ã‚¹ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
     * @return {Object: Boolean} {iphone, android, windowsphone, ipad, androidtab, pc}
     */  
     getDeviceFromUa: function() {
@@ -298,7 +298,7 @@ if(!window.console){
       if((userAgent.indexOf('iphone') > -1 && userAgent.indexOf('ipad') == -1) || userAgent.indexOf('ipod') > -1) {
         deviceType.iphone = true; //iPhone&iPod
       } else if(userAgent.indexOf('android') > -1 && userAgent.indexOf('mobile') > -1) {
-        deviceType.android = true; //AndroidMobile(ˆê•”‚Ìƒ^ƒuƒŒƒbƒgŒ^ƒAƒ“ƒhƒƒCƒh‚ğŠÜ‚Ş)
+        deviceType.android = true; //AndroidMobile(ä¸€éƒ¨ã®ã‚¿ãƒ–ãƒ¬ãƒƒãƒˆå‹ã‚¢ãƒ³ãƒ‰ãƒ­ã‚¤ãƒ‰ã‚’å«ã‚€)
       } else if(userAgent.indexOf('windows phone') > -1) {
         deviceType.windowsphone = true; //WindowsPhone
       } else if(userAgent.indexOf('ipad') > -1 ) {
@@ -312,7 +312,7 @@ if(!window.console){
     },
         
     /**
-    * ƒEƒCƒ“ƒhƒEƒTƒCƒY‚©‚çƒfƒoƒCƒXƒ^ƒCƒv(SP/PC/TB)‚ğæ“¾
+    * ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‹ã‚‰ãƒ‡ãƒã‚¤ã‚¹ã‚¿ã‚¤ãƒ—(SP/PC/TB)ã‚’å–å¾—
     * @return {Object: Boolean} {mousePc, touchPc, mouseTb, touchTb, mouseSp, touchSp}
     */
     getDeviveFromSize: function(breakPointSp, breakPointTb) {
@@ -328,7 +328,7 @@ if(!window.console){
       }
       
       if(!('ontouchstart' in window)) {
-        if(typeof window.addEventListener == 'undefined' && typeof document.getElementsByClassName == 'undefined') {//mediaQuery‚É‘Î‰‚µ‚Ä‚¢‚È‚¢ƒuƒ‰ƒEƒU(lteIe8)‚ÍœŠO
+        if(typeof window.addEventListener == 'undefined' && typeof document.getElementsByClassName == 'undefined') {//mediaQueryã«å¯¾å¿œã—ã¦ã„ãªã„ãƒ–ãƒ©ã‚¦ã‚¶(lteIe8)ã¯é™¤å¤–
           deviceType.mousePc = true;
         } else {
           if(width <= this.breakPointSp) {
@@ -352,7 +352,7 @@ if(!window.console){
     },
     
     /**
-    * UA‚©‚çPC‚Ìƒuƒ‰ƒEƒUƒ^ƒCƒv‚ğæ“¾
+    * UAã‹ã‚‰PCã®ãƒ–ãƒ©ã‚¦ã‚¶ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
     * @return {Object: Boolean} {lteIe6, lteIe7, lteIe8, ie, ie6, ie7, ie8, ie9, firefox, opera, chrome, safari}
     */
     getBrowserFromUa: function() {
@@ -375,7 +375,7 @@ if(!window.console){
     },
         
     /**
-    * ‹@”\ƒeƒXƒg‚©‚çƒuƒ‰ƒEƒU/ƒfƒoƒCƒXƒ^ƒCƒv‚ğæ“¾
+    * æ©Ÿèƒ½ãƒ†ã‚¹ãƒˆã‹ã‚‰ãƒ–ãƒ©ã‚¦ã‚¶/ãƒ‡ãƒã‚¤ã‚¹ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
     * @return {Object: Boolean} {lteIe6, lteIe7, ie, firefox, opera, webkit, mobile}
     */
     getBrowserFromSupport: function() {
@@ -393,8 +393,8 @@ if(!window.console){
   }
 
   /**
-  * window.iJs = new IJs() ‚ÌÛ‚É1“x‚¾‚¯Às
-  * Ã“I‚Èƒf[ƒ^‚ğinitialize‚Åwindow.iJs‚É’Ç‰Á
+  * window.iJs = new IJs() ã®éš›ã«1åº¦ã ã‘å®Ÿè¡Œ
+  * é™çš„ãªãƒ‡ãƒ¼ã‚¿ã‚’initializeã§window.iJsã«è¿½åŠ 
   */
   IJs.prototype.initialize = function() {
     var deviceObj = new IJs.Device(conf);
@@ -414,11 +414,11 @@ if(!window.console){
   * selector
   */
   //id
-  var _id_selector = ij('#hoge').el;
+  var _id_selector = ij('#hoge')[0];
   _id_selector[0].style.color = '#00f';
   
   //class
-  var _class_selector = ij('.hoge').el;
+  var _class_selector = ij('.hoge')[0];
   for(var i = 0, l = _class_selector.length; i < l; i++) _class_selector[i].style.color = '#f00';
   
   //event
@@ -433,24 +433,24 @@ if(!window.console){
   });
 
   //elemnt
-  var _element_selector = ij('span').el;
+  var _element_selector = ij('span')[0];
   for(var i = 0, l = _element_selector.length; i < l; i++) _element_selector[i].style.color = '#390';
   
   //find
-  var _find_selector = ij('.findOuter').find('.findInner').el;
-  //var _find_selector = ij('.findInner', ij('.findOuter')).el;
+  var _find_selector = ij('.findOuter').find('.findInner')[0];
+  //var _find_selector = ij('.findInner', ij('.findOuter'))[0];
   for(var i = 0, l = _find_selector.length; i < l; i++) _find_selector[i].style.color = 'pink';
   
   /**
   * browser
   */
-  ij('#lteIE6').find('strong').el[0].innerText = iJs.browser.lteIe6;
-  ij('#lteIE7').find('strong').el[0].innerText = iJs.browser.lteIe7;
-  ij('#lteIE8').find('strong').el[0].innerText = iJs.browser.lteIe8;
-  ij('#IE').find('strong').el[0].innerText = iJs.browser.ie;
-  ij('#Firefox').find('strong').el[0].innerText = iJs.browser.firefox;
-  ij('#Opera').find('strong').el[0].innerText = iJs.browser.opera;
-  ij('#Webkit').find('strong').el[0].innerText = iJs.browser.webkit;
-  ij('#Mobile').find('strong').el[0].innerText = iJs.browser.mobile;
+  ij('#lteIE6').find('strong')[0][0].innerText = iJs.browser.lteIe6;
+  ij('#lteIE7').find('strong')[0][0].innerText = iJs.browser.lteIe7;
+  ij('#lteIE8').find('strong')[0][0].innerText = iJs.browser.lteIe8;
+  ij('#IE').find('strong')[0][0].innerText = iJs.browser.ie;
+  ij('#Firefox').find('strong')[0][0].innerText = iJs.browser.firefox;
+  ij('#Opera').find('strong')[0][0].innerText = iJs.browser.opera;
+  ij('#Webkit').find('strong')[0][0].innerText = iJs.browser.webkit;
+  ij('#Mobile').find('strong')[0][0].innerText = iJs.browser.mobile;
   
 })();
