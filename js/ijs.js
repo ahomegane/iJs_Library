@@ -1,15 +1,13 @@
 if(!window.console){
   window.console = {};
   window.console.log = function(c){
-    return c;
+    alert(c);
   };
 }
 
 /**
 * memo:
-* ・createElement
 * ・extend
-* ・ready
 */
 
 /**
@@ -54,18 +52,131 @@ if(!window.console){
   */
   IJs.Functions = function() {}
   IJs.Functions.prototype = IJs.prototype = {
+
+    /** ready */
+
+    ready: function(callback) {
+
+      if (doc.readyState === "complete") {//すでにonloadを実行している場合は即実行
+        setTimeout(callback, 1);
+
+      } else if(doc.addEventListener) {//standard
+        doc.addEventListener("DOMContentLoaded", callback, false);
+      
+      } else {//legacy
+
+        //http://javascript.nwbox.com/IEContentLoaded/
+        var isReady = false;
+        // only fire once
+        function done() {
+          if (!isReady) {
+            isReady = true;
+            callback();
+          }
+        };
+        // polling for no errors
+        (function doScrollCheck() {
+          try {
+            // throws errors until after ondocumentready
+            doc.documentElement.doScroll('left');
+          } catch (e) {
+            setTimeout(doScrollCheck, 50);
+            return;
+          }
+          // no errors, fire
+          done();
+        })();
+        // trying to always fire before onload
+        doc.onreadystatechange = function() {
+          if (doc.readyState == 'complete') {
+            doc.onreadystatechange = null;
+            done();
+          }
+        };
+      }
+    },
+
+    load: function(callback) {
+      this.addEventListener(window, 'load', callback);
+    },
+
+    imageLoader: function(imageSrcList, callbacks, timeout) {
+      callbacks = callbacks || {};
+
+      //create wrap element for append
+      var cacheEl = doc.createElement('div');
+      cacheEl.style.display = 'none';
+      doc.body.appendChild(cacheEl);
+
+      var all = imageSrcList.length, 
+      progress = 0,
+      isTimeout = false,
+      isComplete = false;
+
+      for(var i=0; i<all; i++) {
+        var img = new Image();
+        img.onload = function() {
+          progress++;
+          if(typeof callbacks.progress == 'function' && !isTimeout) {
+            callbacks.progress(progress, all);
+          }
+          if(progress == all) {
+            complete();
+          }
+        };
+        img.onerror = function() {
+          console.log('image: error');
+          if(progress == all-1) {//最後の1つがerrorの場合
+            complete();
+          } else {
+            all--;
+          }
+          //ie6で複数回実行される場合があるため
+          img.onerror = null;
+        }
+        cacheEl.appendChild(img);
+
+        //append後にsrcをsetしなければieでonloadが発生しない場合がある(キャッシュが原因)
+        img.src = imageSrcList[i];
+      }
+
+      //safetynet timeout処理
+      if(timeout && typeof callbacks.complete == 'function') {
+        var timer = 0, stepTime = 100;
+        setInterval(function(){
+          timer += stepTime;
+          if(timer == timeout && !isComplete) {
+            isTimeout = true;
+            console.log('image: timeout');
+            callbacks.complete();
+          }
+        },stepTime);
+      }
+
+      /**
+      * @inner
+      * completeは1度だけ実行
+      */
+      function complete() {
+        if(typeof callbacks.complete == 'function' && !isComplete && !isTimeout) {
+          isComplete = true;
+          callbacks.complete();
+          //remove wrapper
+          cacheEl.parentNode.removeChild(cacheEl);
+        }
+      }
+    },
     
     /** Array */
     
-    concat: function(a,b) {
-      return Array.prototype.push.apply(a,b);
-    },
-    
     objToArray: function(a) {
-      //Array.prototype.slice.call(a); not work lteIe8 
-      var rv = Array(a.length);
-      for(i = 0, l=rv.length; i < l; i++) { rv[i] = a[i]; }
-      return rv;
+      try {
+        return Array.prototype.slice.call(a); //not work lteIe8
+      } catch(e) {
+        var rv = new Array(a.length);
+        for(i = 0, l=rv.length; i < l; i++) { rv[i] = a[i]; }
+        return rv;
+      }
     },
 
     /** Event */
@@ -82,8 +193,6 @@ if(!window.console){
         el.addEventListener(ev, listenerFunc, false);
       } else if(el.attachEvent) { //IE
         el.attachEvent('on' + ev, listenerFunc);
-      } else {
-        throw new Error('error: no event listener');
       }
     },
     
@@ -99,8 +208,6 @@ if(!window.console){
         el.removeEventListener(ev, listenerFunc, false);
       } else if(el.detachEvent) { //IE
         el.detachEvent('on' + ev, listenerFunc);
-      } else {
-        throw new Error('error: no event listener');
       }
     },
   
@@ -123,7 +230,7 @@ if(!window.console){
     * @return {void}
     */
     preventDefault: function(e) {
-      if (e.preventDefault) { //except for IE
+      if(e.preventDefault) { //except for IE
         e.preventDefault();
       } else if(window.event) { //IE
         window.event.returnValue = false;
@@ -154,12 +261,15 @@ if(!window.console){
   * メソッドチェーンとして使用可能(return this;)
   */
   IJs.Selectors = function(selector, context) {
-    this[0] = null;//dom obj {Array}
-    this.context = context;
-    this.selector = selector;
-    return this.find(this.selector, this.context);
+    return this.find(selector, context);
   }
   IJs.Selectors.prototype = {
+
+    0: null,//dom element {Array}
+
+    context: null,
+
+    selector: null,
     
     find: function(selector, context) {
       //selector string cleanup
@@ -188,7 +298,7 @@ if(!window.console){
       //standard
       if(isStandard) {
         context.each(function() {
-          fn.concat(elArr, fn.objToArray(this.querySelectorAll(selector)));
+          elArr = elArr.concat(fn.objToArray(this.querySelectorAll(selector)));
         });
 
       //legacy
@@ -215,7 +325,7 @@ if(!window.console){
           
           if(/^#/.test(selector)) {//id
             selector = selector.replace(/^#/, '');
-            fn.concat(elArr, [doc.getElementById(selector)]);
+            elArr = elArr.concat([doc.getElementById(selector)]);
             
           } else if(/^\./.test(selector)) {//class
             context.each(function() {
@@ -226,12 +336,12 @@ if(!window.console){
                   arr.push(all[i]);
                 }
               }
-              fn.concat(elArr, arr);
+              elArr = elArr.concat(arr);
             });
             
           } else {//tagname
             context.each(function() {
-              fn.concat(elArr, this.getElementsByTagName(selector));
+              elArr = elArr.concat(fn.objToArray(this.getElementsByTagName(selector)));
             });
           }
 
@@ -284,31 +394,31 @@ if(!window.console){
     this.detectDeviceType = conf.detectDeviceType;
     this.breakPointSp = conf.breakPointSp || 568;
     this.breakPointTb = conf.breakPointTb || 746;
-    
-    //return static data
-    this.data = {};
     return this.init();
   }
   IJs.Device.prototype = {
-      
+    
+    device: null,//return static data
+
+    browser: null,//return static data
+
     init: function() {
       switch(this.detectBrowserType) {
         case 'ua':
-          this.data.browser = this.getBrowserFromUa();
+          this.browser = this.getBrowserFromUa();
           break;
         case 'support':
-          this.data.browser = this.getBrowserFromSupport();
+          this.browser = this.getBrowserFromSupport();
           break;
       }
       switch(this.detectDeviceType) {
         case 'ua':
-          this.data.device = this.getDeviceFromUa();
+          this.device = this.getDeviceFromUa();
           break;
         case 'size':
-          this.data.device = this.getDeviveFromSize(this.breakPointSp, this.breakPointTb);
+          this.device = this.getDeviveFromSize(this.breakPointSp, this.breakPointTb);
           break;
       }
-      console.log(this.data);
     },
     
     /**
@@ -332,9 +442,9 @@ if(!window.console){
         deviceType.android = true; //AndroidMobile(一部のタブレット型アンドロイドを含む)
       } else if(userAgent.indexOf('windows phone') > -1) {
         deviceType.windowsphone = true; //WindowsPhone
-      } else if(userAgent.indexOf('ipad') > -1 ) {
+      } else if(userAgent.indexOf('ipad') > -1) {
         deviceType.ipad = true; //iPad
-      } else if(userAgent.indexOf('android') > -1 ) {
+      } else if(userAgent.indexOf('android') > -1) {
         deviceType.androidTab = true; //AndroidTablet
       } else {
         deviceType.pc = true; //PC
@@ -381,7 +491,7 @@ if(!window.console){
       }            
       return deviceType;
     },
-    
+
     /**
     * UAからPCのブラウザタイプを取得
     * @return {Object: Boolean} {lteIe6, lteIe7, lteIe8, ie, ie6, ie7, ie8, ie9, firefox, opera, chrome, safari}
@@ -398,6 +508,7 @@ if(!window.console){
         ie7:     userAgent.indexOf('msie 7.') > -1,
         ie8:     userAgent.indexOf('msie 8.') > -1,
         ie9:     userAgent.indexOf('msie 9.') > -1,
+        ie10:    userAgent.indexOf('msie 10.') > -1,
         firefox: userAgent.indexOf('firefox') > -1,
         opera:   userAgent.indexOf('opera') > -1,
         chrome:  userAgent.indexOf('chrome') > -1,
@@ -423,14 +534,17 @@ if(!window.console){
     }
   }
 
+  var device = new IJs.Device(conf);
+
   /**
   * window.iJs = new IJs() の際に1度だけ実行
   * 静的なデータをinitializeでwindow.iJsに追加
   */
   IJs.prototype.initialize = function() {
     var deviceObj = new IJs.Device(conf);
-    this.browser = deviceObj.data.browser;
-    this.device = deviceObj.data.device;
+    this.browser = deviceObj.browser;
+    this.device = deviceObj.device;
+  
   }
 
   window.ij = ij;
@@ -440,7 +554,10 @@ if(!window.console){
 
 //test
 (function(){
-  
+
+iJs.ready(function(){
+  console.log('ready');
+
   /**
   * selector
   */
@@ -484,5 +601,37 @@ if(!window.console){
   ij('#Opera').find('strong')[0][0].innerText = iJs.browser.opera;
   ij('#Webkit').find('strong')[0][0].innerText = iJs.browser.webkit;
   ij('#Mobile').find('strong')[0][0].innerText = iJs.browser.mobile;
-  
+
+  var imageSrcList = [];
+  for(var i=1, l=19; i<=l; i++) {
+    imageSrcList.push('./img/dummy/dummy_' + i + '.jpg');
+  }
+
+  //404
+  //imageSrcList.push('aaaa');
+
+  iJs.imageLoader(imageSrcList,{
+    progress: function(progress, all) {
+      console.log('image: ' + Math.floor(progress/all*100) + '%');
+    },
+    complete: function() {
+      console.log('image: complete');
+    }
+  }, 2000);
+
+});
+
+  /**
+  * fn: ready
+  */  
+  iJs.ready(function(){
+    console.log('ready2');
+  });
+  iJs.load(function(){
+    console.log('load');
+  });
+  iJs.load(function(){
+    console.log('load2');
+  });
+
 })();
