@@ -6,15 +6,10 @@ if(!window.console){
 }
 
 /**
-* memo:
-* ・extend
-*/
-
-/**
-* @fileOverview iJs JavaScript Library
+* @fileOverview ijs JavaScript Library
 * @name ijs.js
 * @version 1.0.0 2012.12.23 Creating New File
-* @namespace global namespace [iJs, ij]
+* @namespace global namespace [ijs, ij]
 */
 (function(){
 
@@ -32,26 +27,26 @@ if(!window.console){
   */
   var ij = function(selector, context){
     if(selector) {
-      return new IJs.Selectors(selector, context);      
+      return new Ijs.Selectors(selector, context);      
     }  else {
       return null;
     }
   }
   
   /**
-  * IJsオブジェクト
-  * window.iJs = new IJs(); として外部インターフェースとする
+  * Ijsオブジェクト
+  * window.ijs = new Ijs(); として外部インターフェースとする
   */
-  var IJs = function() {
+  var Ijs = function() {
     return this.initialize();
   }
 
   /**
   * 外部から参照するメソッド
-  * prototypeをIJsと共有する
+  * prototypeをIjsと共有する
   */
-  IJs.Functions = function() {}
-  IJs.Functions.prototype = IJs.prototype = {
+  Ijs.Functions = function() {}
+  Ijs.Functions.prototype = Ijs.prototype = {
 
     /** ready */
 
@@ -254,16 +249,16 @@ if(!window.console){
     
   }
 
-  var fn = new IJs.Functions();
+  var fn = new Ijs.Functions();
 
   /**
   * セレクターエンジン
   * メソッドチェーンとして使用可能(return this;)
   */
-  IJs.Selectors = function(selector, context) {
+  Ijs.Selectors = function(selector, context) {
     return this.find(selector, context);
   }
-  IJs.Selectors.prototype = {
+  Ijs.Selectors.prototype = {
 
     0: null,//dom element {Array}
 
@@ -283,13 +278,13 @@ if(!window.console){
       this.context = context;
       this.selector = selector;
 
-      //documentオブジェクト(new IJs.Selectors(doc)の前に処理を行うと無限ループになる)
+      //documentオブジェクト(new Ijs.Selectors(doc)の前に処理を行うと無限ループになる)
       if(selector == doc) {
         this[0] = [doc];
         return this;
       }
 
-      context = context instanceof IJs.Selectors ? context : new IJs.Selectors(doc);
+      context = context instanceof Ijs.Selectors ? context : new Ijs.Selectors(doc);
 
       //browser test
       var isStandard = doc.querySelectorAll,
@@ -379,24 +374,24 @@ if(!window.console){
 
   /**
   * ロード時に実行するメソッド
-  * IJs.initialize時に実行
+  * Ijs.initialize時に実行
   */
-  IJs.Onload = function(conf) {}
-  IJs.Onload.prototype = {
+  Ijs.Onload = function(conf) {}
+  Ijs.Onload.prototype = {
   }
 
   /**
   * ユーザー環境データの取得
-  * IJs.initialize時に実行
+  * Ijs.initialize時に実行
   */
-  IJs.Device = function(conf) {
+  Ijs.Device = function(conf) {
     this.detectBrowserType = conf.detectBrowserType;
     this.detectDeviceType = conf.detectDeviceType;
     this.breakPointSp = conf.breakPointSp || 568;
     this.breakPointTb = conf.breakPointTb || 746;
     return this.init();
   }
-  IJs.Device.prototype = {
+  Ijs.Device.prototype = {
     
     device: null,//return static data
 
@@ -534,28 +529,28 @@ if(!window.console){
     }
   }
 
-  var device = new IJs.Device(conf);
+  var device = new Ijs.Device(conf);
 
   /**
-  * window.iJs = new IJs() の際に1度だけ実行
-  * 静的なデータをinitializeでwindow.iJsに追加
+  * window.ijs = new Ijs() の際に1度だけ実行
+  * 静的なデータをinitializeでwindow.ijsに追加
   */
-  IJs.prototype.initialize = function() {
-    var deviceObj = new IJs.Device(conf);
+  Ijs.prototype.initialize = function() {
+    var deviceObj = new Ijs.Device(conf);
     this.browser = deviceObj.browser;
     this.device = deviceObj.device;
   
   }
 
   window.ij = ij;
-  window.iJs = new IJs();
+  window.ijs = new Ijs();
 
 })();
 
 //test
 (function(){
 
-iJs.ready(function(){
+ijs.ready(function(){
   console.log('ready');
 
   /**
@@ -593,14 +588,14 @@ iJs.ready(function(){
   /**
   * browser
   */
-  ij('#lteIE6').find('strong')[0][0].innerText = iJs.browser.lteIe6;
-  ij('#lteIE7').find('strong')[0][0].innerText = iJs.browser.lteIe7;
-  ij('#lteIE8').find('strong')[0][0].innerText = iJs.browser.lteIe8;
-  ij('#IE').find('strong')[0][0].innerText = iJs.browser.ie;
-  ij('#Firefox').find('strong')[0][0].innerText = iJs.browser.firefox;
-  ij('#Opera').find('strong')[0][0].innerText = iJs.browser.opera;
-  ij('#Webkit').find('strong')[0][0].innerText = iJs.browser.webkit;
-  ij('#Mobile').find('strong')[0][0].innerText = iJs.browser.mobile;
+  ij('#lteIE6').find('strong')[0][0].innerText = ijs.browser.lteIe6;
+  ij('#lteIE7').find('strong')[0][0].innerText = ijs.browser.lteIe7;
+  ij('#lteIE8').find('strong')[0][0].innerText = ijs.browser.lteIe8;
+  ij('#IE').find('strong')[0][0].innerText = ijs.browser.ie;
+  ij('#Firefox').find('strong')[0][0].innerText = ijs.browser.firefox;
+  ij('#Opera').find('strong')[0][0].innerText = ijs.browser.opera;
+  ij('#Webkit').find('strong')[0][0].innerText = ijs.browser.webkit;
+  ij('#Mobile').find('strong')[0][0].innerText = ijs.browser.mobile;
 
   var imageSrcList = [];
   for(var i=1, l=19; i<=l; i++) {
@@ -610,7 +605,7 @@ iJs.ready(function(){
   //404
   //imageSrcList.push('aaaa');
 
-  iJs.imageLoader(imageSrcList,{
+  ijs.imageLoader(imageSrcList,{
     progress: function(progress, all) {
       console.log('image: ' + Math.floor(progress/all*100) + '%');
     },
@@ -624,13 +619,13 @@ iJs.ready(function(){
   /**
   * fn: ready
   */  
-  iJs.ready(function(){
+  ijs.ready(function(){
     console.log('ready2');
   });
-  iJs.load(function(){
+  ijs.load(function(){
     console.log('load');
   });
-  iJs.load(function(){
+  ijs.load(function(){
     console.log('load2');
   });
 
