@@ -1,7 +1,8 @@
 if(!window.console){
   window.console = {};
   window.console.log = function(c){
-    alert(c);
+    return c;
+    //alert(c);
   };
 }
 
@@ -13,12 +14,6 @@ if(!window.console){
 */
 (function(){
 
-  var conf = {
-    detectBrowserType: 'support',
-    detectDeviceType: 'size',
-    breakPointSp: 640,
-    breakPointTb: 850
-  };
   var doc = document;
 
   /**
@@ -40,6 +35,176 @@ if(!window.console){
   var Ijs = function() {
     return this.initialize();
   }
+
+  /**
+  * ユーザー環境データの取得
+  * Ijs.initialize時に実行
+  */
+  Ijs.Device = function(args) {
+    this.breakPointNarrow = args.breakPointNarrow;
+    this.breakPointMedium = args.breakPointMedium;
+    return this.init();
+  }
+  Ijs.Device.prototype = {
+
+    init: function() {
+      this.deviceUa = this.getDeviceFromUa();
+      this.deviceSize = this.getDeviveFromSize(this.breakPointNarrow, this.breakPointMedium);
+      this.browserUa = this.getBrowserFromUa();
+      this.browserSupport = this.getBrowserFromSupport();
+    },
+    
+    /**
+    * UAからSP/PC/TBのデバイスタイプを取得
+    * @return {Object: Boolean} {iphone, android, windowsphone, ipad, androidtab, pc}
+    */  
+    getDeviceFromUa: function() {
+      var userAgent = window.navigator.userAgent.toLowerCase();
+      var deviceType = {
+        iphone:       false,
+        android:      false,
+        windowsphone: false,
+        ipad:         false,
+        androidtab:   false,
+        pc:           false
+      }
+      
+      if((userAgent.indexOf('iphone') > -1 && userAgent.indexOf('ipad') == -1) || userAgent.indexOf('ipod') > -1) {
+        deviceType.iphone = true; //iPhone&iPod
+      } else if(userAgent.indexOf('android') > -1 && userAgent.indexOf('mobile') > -1) {
+        deviceType.android = true; //AndroidMobile(一部のタブレット型アンドロイドを含む)
+      } else if(userAgent.indexOf('windows phone') > -1) {
+        deviceType.windowsphone = true; //WindowsPhone
+      } else if(userAgent.indexOf('ipad') > -1) {
+        deviceType.ipad = true; //iPad
+      } else if(userAgent.indexOf('android') > -1) {
+        deviceType.androidTab = true; //AndroidTablet
+      } else {
+        deviceType.pc = true; //PC
+      }
+      return deviceType;
+    },
+        
+    /**
+    * ウインドウサイズからデバイスタイプ(SP/PC/TB)を取得
+    * @return {Object: Boolean} {mouseWide, touchWide, mouseMedium, touchMedium, mouseNarrow, touchNarrow}
+    */
+    getDeviveFromSize: function(breakPointNarrow, breakPointMedium) {
+      var width = window.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth;
+      var deviceType = {
+        mouseWide: false,
+        touchWide: false,
+        mouseMedium: false,
+        touchMedium: false,
+        mouseNarrow: false,
+        touchNarrow: false
+      }
+      
+      if(!('ontouchstart' in window)) {
+        if(typeof window.addEventListener == 'undefined' && typeof document.getElementsByClassName == 'undefined') {//mediaQueryに対応していないブラウザ(lteIe8)は除外
+          deviceType.mouseWide = true;
+        } else {
+          if(breakPointNarrow && width <= breakPointNarrow) {
+            deviceType.mouseNarrow = true;
+          } else if(breakPointMedium && width <= breakPointMedium) {
+            deviceType.mouseMedium = true;
+          } else {
+            deviceType.mouseWide = true;
+          }
+        }
+      } else {
+        if(breakPointNarrow && width <= breakPointNarrow) {
+          deviceType.touchNarrow = true;
+        } else if(breakPointMedium && width <= breakPointMedium) {
+          deviceType.touchMedium = true;
+        } else {
+          deviceType.touchWide = true;
+        }
+      }            
+      return deviceType;
+    },
+
+    /**
+    * UAからPCのブラウザタイプを取得
+    * @return {Object: Boolean} {lteIe6, lteIe7, lteIe8, ie, ie6, ie7, ie8, ie9, firefox, opera, chrome, safari}
+    */
+    getBrowserFromUa: function() {
+      var userAgent = window.navigator.userAgent.toLowerCase();
+      var ieVersion = userAgent.slice(userAgent.indexOf('msie ')+'msie '.length,userAgent.indexOf('msie ')+'msie '.length+1);
+      var browserType = {
+        lteIe6:  false,
+        lteIe7:  false,
+        lteIe8:  false,
+        ie:      false,
+        ie6:     false,
+        ie7:     false,
+        ie8:     false,
+        ie9:     false,
+        ie10:    false,
+        firefox: false,
+        opera:   false,
+        chrome:  false,
+        safari:  false,
+        other:  false
+      }
+
+      if(ieVersion<7) {
+        browserType.lteIe6 = true;
+      } else if(ieVersion<8) {
+        browserType.lteIe7 = true;
+      } else if(ieVersion<9) {
+        browserType.lteIe8 = true;
+      } else if(ieVersion<10) {
+        browserType.lteIe9 = true;
+      } else if(userAgent.indexOf('msie') > -1) {
+        browserType.ie = true;
+      } else if(userAgent.indexOf('msie 6.') > -1) {
+        browserType.ie6 = true;
+      } else if(userAgent.indexOf('msie 7.') > -1) {
+        browserType.ie7 = true;
+      } else if(userAgent.indexOf('msie 8.') > -1) {
+        browserType.ie8 = true;
+      } else if(userAgent.indexOf('msie 9.') > -1) {
+        browserType.ie9 = true;
+      } else if(userAgent.indexOf('msie 10.') > -1) {
+        browserType.ie10 = true;
+      } else if(userAgent.indexOf('firefox') > -1) {
+        browserType.firefox = true;
+      } else if(userAgent.indexOf('opera') > -1) {
+        browserType.opera = true;
+      } else if(userAgent.indexOf('chrome') > -1) {
+        browserType.chrome = true;
+      } else if(userAgent.indexOf('safari') > -1 && userAgent.indexOf('chrome') == -1) {
+        browserType.safari = true;
+      } else {
+        browserType.other = true;
+      }
+
+      return browserType;
+    },
+        
+    /**
+    * 機能テストからブラウザ/デバイスタイプを取得
+    * @return {Object: Boolean} {lteIe6, lteIe7, ie, firefox, opera, webkit, mobile}
+    */
+    getBrowserFromSupport: function() {
+      return {
+        lteIe6:  typeof window.addEventListener == 'undefined' && typeof document.documentElement.style.maxHeight == 'undefined',
+        lteIe7:  typeof window.addEventListener == 'undefined' && typeof document.querySelectorAll == 'undefined',
+        lteIe8:  typeof window.addEventListener == 'undefined' && typeof document.getElementsByClassName == 'undefined',
+        ie:      document.uniqueID,
+        firefox: window.sidebar,
+        opera:   window.opera,
+        webkit:  !document.uniqueID && !window.opera && !window.sidebar && window.localStorage && typeof window.orientation == 'undefined',
+        mobile:  typeof window.orientation != 'undefined'
+      }
+    }
+  }
+
+  var iDevice = new Ijs.Device({
+    breakPointNarrow: 568,
+    breakPointWide: 746
+  });
 
   /**
   * 外部から参照するメソッド
@@ -161,18 +326,6 @@ if(!window.console){
         }
       }
     },
-    
-    /** Array */
-    
-    objToArray: function(a) {
-      try {
-        return Array.prototype.slice.call(a); //not work lteIe8
-      } catch(e) {
-        var rv = new Array(a.length);
-        for(i = 0, l=rv.length; i < l; i++) { rv[i] = a[i]; }
-        return rv;
-      }
-    },
 
     /** Event */
     
@@ -207,7 +360,7 @@ if(!window.console){
     },
   
     /**
-    * stopPropagation IE補完
+    * stopPropagation IE補完 (ieではlistener内でもstopPropagationはwindow.event)
     * @param {Object} e イベントオブジェクト
     * @return {void}
     */
@@ -220,7 +373,7 @@ if(!window.console){
     },
   
     /**
-    * preventDefault IE補完
+    * preventDefault IE補完 (ieではlistener内でもpreventDefaultはwindow.event)
     * @param {Object} e イベントオブジェクト
     * @return {void}
     */
@@ -232,6 +385,18 @@ if(!window.console){
       }
     },
   
+    /** Array */
+    
+    objToArray: function(a) {
+      try {
+        return Array.prototype.slice.call(a); //not work lteIe8
+      } catch(e) {
+        var rv = new Array(a.length);
+        for(i = 0, l=rv.length; i < l; i++) { rv[i] = a[i]; }
+        return rv;
+      }
+    },
+
     /** Object */
     
     /**
@@ -245,11 +410,17 @@ if(!window.console){
         count++;
       }
       return count;
+    },
+
+    copyProp: function(base, convert) {
+      for(var prop in base) {
+        convert[prop] = base[prop];
+      }
     }
     
   }
 
-  var fn = new Ijs.Functions();
+  var iFn = new Ijs.Functions();
 
   /**
   * セレクターエンジン
@@ -279,8 +450,8 @@ if(!window.console){
       this.selector = selector;
 
       //documentオブジェクト(new Ijs.Selectors(doc)の前に処理を行うと無限ループになる)
-      if(selector == doc) {
-        this[0] = [doc];
+      if(typeof selector == 'object' && (selector.nodeType || selector[0].nodeType)) {
+        this[0] = [selector];
         return this;
       }
 
@@ -293,7 +464,7 @@ if(!window.console){
       //standard
       if(isStandard) {
         context.each(function() {
-          elArr = elArr.concat(fn.objToArray(this.querySelectorAll(selector)));
+          elArr = elArr.concat(iFn.objToArray(this.querySelectorAll(selector)));
         });
 
       //legacy
@@ -336,7 +507,7 @@ if(!window.console){
             
           } else {//tagname
             context.each(function() {
-              elArr = elArr.concat(fn.objToArray(this.getElementsByTagName(selector)));
+              elArr = elArr.concat(iFn.objToArray(this.getElementsByTagName(selector)));
             });
           }
 
@@ -358,7 +529,7 @@ if(!window.console){
     on: function(ev, listenerFunc) {
       if(this[0]) {
         this.each(function(i) {
-          fn.addEventListener(this, ev, listenerFunc);
+          iFn.addEventListener(this, ev, listenerFunc);
         });
       }
     },
@@ -366,7 +537,7 @@ if(!window.console){
     off: function(ev, listenerFunc) {
       if(this[0]) {
         this.each(function() {
-          fn.removeEventListener(this, ev, listenerFunc);
+          iFn.removeEventListener(this, ev, listenerFunc);
         });
       }
     }
@@ -376,174 +547,25 @@ if(!window.console){
   * ロード時に実行するメソッド
   * Ijs.initialize時に実行
   */
-  Ijs.Onload = function(conf) {}
+  Ijs.Onload = function() {}
   Ijs.Onload.prototype = {
   }
-
-  /**
-  * ユーザー環境データの取得
-  * Ijs.initialize時に実行
-  */
-  Ijs.Device = function(conf) {
-    this.detectBrowserType = conf.detectBrowserType;
-    this.detectDeviceType = conf.detectDeviceType;
-    this.breakPointSp = conf.breakPointSp || 568;
-    this.breakPointTb = conf.breakPointTb || 746;
-    return this.init();
-  }
-  Ijs.Device.prototype = {
-    
-    device: null,//return static data
-
-    browser: null,//return static data
-
-    init: function() {
-      switch(this.detectBrowserType) {
-        case 'ua':
-          this.browser = this.getBrowserFromUa();
-          break;
-        case 'support':
-          this.browser = this.getBrowserFromSupport();
-          break;
-      }
-      switch(this.detectDeviceType) {
-        case 'ua':
-          this.device = this.getDeviceFromUa();
-          break;
-        case 'size':
-          this.device = this.getDeviveFromSize(this.breakPointSp, this.breakPointTb);
-          break;
-      }
-    },
-    
-    /**
-    * UAからSP/PC/TBのデバイスタイプを取得
-    * @return {Object: Boolean} {iphone, android, windowsphone, ipad, androidtab, pc}
-    */  
-    getDeviceFromUa: function() {
-      var userAgent = window.navigator.userAgent.toLowerCase();
-      var deviceType = {
-        iphone:       false,
-        android:      false,
-        windowsphone: false,
-        ipad:         false,
-        androidtab:   false,
-        pc:           false
-      }
-      
-      if((userAgent.indexOf('iphone') > -1 && userAgent.indexOf('ipad') == -1) || userAgent.indexOf('ipod') > -1) {
-        deviceType.iphone = true; //iPhone&iPod
-      } else if(userAgent.indexOf('android') > -1 && userAgent.indexOf('mobile') > -1) {
-        deviceType.android = true; //AndroidMobile(一部のタブレット型アンドロイドを含む)
-      } else if(userAgent.indexOf('windows phone') > -1) {
-        deviceType.windowsphone = true; //WindowsPhone
-      } else if(userAgent.indexOf('ipad') > -1) {
-        deviceType.ipad = true; //iPad
-      } else if(userAgent.indexOf('android') > -1) {
-        deviceType.androidTab = true; //AndroidTablet
-      } else {
-        deviceType.pc = true; //PC
-      }
-      return deviceType;
-    },
-        
-    /**
-    * ウインドウサイズからデバイスタイプ(SP/PC/TB)を取得
-    * @return {Object: Boolean} {mousePc, touchPc, mouseTb, touchTb, mouseSp, touchSp}
-    */
-    getDeviveFromSize: function(breakPointSp, breakPointTb) {
-      var browser = this.getDeviceFromUa(),
-      width = window.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth;
-      var deviceType = {
-        mousePc: false,
-        touchPc: false,
-        mouseTb: false,
-        touchTb: false,
-        mouseSp: false,
-        touchSp: false
-      }
-      
-      if(!('ontouchstart' in window)) {
-        if(typeof window.addEventListener == 'undefined' && typeof document.getElementsByClassName == 'undefined') {//mediaQueryに対応していないブラウザ(lteIe8)は除外
-          deviceType.mousePc = true;
-        } else {
-          if(width <= this.breakPointSp) {
-            deviceType.mouseSp = true;
-          } else if(width <= this.breakPointTb) {
-            deviceType.mouseTb = true;
-          } else {
-            deviceType.mousePc = true;
-          }
-        }
-      } else {
-        if(width <= this.breakPointSp) {
-          deviceType.touchSp = true;
-        } else if(width <= this.breakPointTb) {
-          deviceType.touchTb = true;
-        } else {
-          deviceType.touchPc = true;
-        }
-      }            
-      return deviceType;
-    },
-
-    /**
-    * UAからPCのブラウザタイプを取得
-    * @return {Object: Boolean} {lteIe6, lteIe7, lteIe8, ie, ie6, ie7, ie8, ie9, firefox, opera, chrome, safari}
-    */
-    getBrowserFromUa: function() {
-      var userAgent = window.navigator.userAgent.toLowerCase();
-      var ieVersion = userAgent.slice(userAgent.indexOf('msie ')+'msie '.length,userAgent.indexOf('msie ')+'msie '.length+1);
-      return {
-        lteIe6:  ieVersion<7,
-        lteIe7:  ieVersion<8,
-        lteIe8:  ieVersion<9,
-        ie:      userAgent.indexOf('msie') > -1,
-        ie6:     userAgent.indexOf('msie 6.') > -1,
-        ie7:     userAgent.indexOf('msie 7.') > -1,
-        ie8:     userAgent.indexOf('msie 8.') > -1,
-        ie9:     userAgent.indexOf('msie 9.') > -1,
-        ie10:    userAgent.indexOf('msie 10.') > -1,
-        firefox: userAgent.indexOf('firefox') > -1,
-        opera:   userAgent.indexOf('opera') > -1,
-        chrome:  userAgent.indexOf('chrome') > -1,
-        safari:  userAgent.indexOf('safari') > -1
-      }
-    },
-        
-    /**
-    * 機能テストからブラウザ/デバイスタイプを取得
-    * @return {Object: Boolean} {lteIe6, lteIe7, ie, firefox, opera, webkit, mobile}
-    */
-    getBrowserFromSupport: function() {
-      return {
-        lteIe6:  typeof window.addEventListener == 'undefined' && typeof document.documentElement.style.maxHeight == 'undefined',
-        lteIe7:  typeof window.addEventListener == 'undefined' && typeof document.querySelectorAll == 'undefined',
-        lteIe8:  typeof window.addEventListener == 'undefined' && typeof document.getElementsByClassName == 'undefined',
-        ie:      document.uniqueID,
-        firefox: window.sidebar,
-        opera:   window.opera,
-        webkit:  !document.uniqueID && !window.opera && !window.sidebar && window.localStorage && typeof window.orientation == 'undefined',
-        mobile:  typeof window.orientation != 'undefined'
-      }
-    }
-  }
-
-  var device = new Ijs.Device(conf);
 
   /**
   * window.ijs = new Ijs() の際に1度だけ実行
   * 静的なデータをinitializeでwindow.ijsに追加
   */
   Ijs.prototype.initialize = function() {
-    var deviceObj = new Ijs.Device(conf);
-    this.browser = deviceObj.browser;
-    this.device = deviceObj.device;
-  
+    this.deviceUa = iDevice.deviceUa;
+    this.deviceSize = iDevice.deviceSize;
+    this.browserUa = iDevice.browserUa;
+    this.browserSupport = iDevice.browserSupport;
   }
 
   window.ij = ij;
   window.ijs = new Ijs();
+
+  console.log(window.ijs);
 
 })();
 
@@ -563,16 +585,18 @@ ijs.ready(function(){
   //class
   var _class_selector = ij('.hoge')[0];
   for(var i = 0, l = _class_selector.length; i < l; i++) _class_selector[i].style.color = '#f00';
-  
+
   //event
   ij('.hoge').on('click',clickConsole);
   //ij('.hoge').off('click',clickConsole);
   function clickConsole() {
     console.log('click');
+    console.log(this.style.color);
+    console.log(ij(this)[0][0].style.color);
   }
   ij('.hoge').each(function(index) {
-    //console.log(index);
-    //console.log(this);
+    // console.log(index);
+    // console.log(this);
   });
 
   //elemnt
@@ -588,14 +612,14 @@ ijs.ready(function(){
   /**
   * browser
   */
-  ij('#lteIE6').find('strong')[0][0].innerText = ijs.browser.lteIe6;
-  ij('#lteIE7').find('strong')[0][0].innerText = ijs.browser.lteIe7;
-  ij('#lteIE8').find('strong')[0][0].innerText = ijs.browser.lteIe8;
-  ij('#IE').find('strong')[0][0].innerText = ijs.browser.ie;
-  ij('#Firefox').find('strong')[0][0].innerText = ijs.browser.firefox;
-  ij('#Opera').find('strong')[0][0].innerText = ijs.browser.opera;
-  ij('#Webkit').find('strong')[0][0].innerText = ijs.browser.webkit;
-  ij('#Mobile').find('strong')[0][0].innerText = ijs.browser.mobile;
+  ij('#lteIE6').find('strong')[0][0].innerText = ijs.browserSupport.lteIe6;
+  ij('#lteIE7').find('strong')[0][0].innerText = ijs.browserSupport.lteIe7;
+  ij('#lteIE8').find('strong')[0][0].innerText = ijs.browserSupport.lteIe8;
+  ij('#IE').find('strong')[0][0].innerText = ijs.browserSupport.ie;
+  ij('#Firefox').find('strong')[0][0].innerText = ijs.browserSupport.firefox;
+  ij('#Opera').find('strong')[0][0].innerText = ijs.browserSupport.opera;
+  ij('#Webkit').find('strong')[0][0].innerText = ijs.browserSupport.webkit;
+  ij('#Mobile').find('strong')[0][0].innerText = ijs.browserSupport.mobile;
 
   var imageSrcList = [];
   for(var i=1, l=19; i<=l; i++) {
