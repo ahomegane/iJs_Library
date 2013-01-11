@@ -462,7 +462,7 @@ if(!window.console){
       elArr = [];
 
       //standard
-      if(isStandard) {
+      if(!isStandard) {
         context.each(function() {
           elArr = elArr.concat(iFn.objToArray(this.querySelectorAll(selector)));
         });
@@ -497,8 +497,9 @@ if(!window.console){
             context.each(function() {
               var all = this.getElementsByTagName('*'), arr = [];
               selector = selector.replace(/^\./, '');
+              var rClassName = new RegExp('\\b' + selector + '\\b');
               for (var i = 0, l = all.length; i < l; i++) {
-                if (all[i].className === selector) {
+                if (rClassName.test(all[i].className)) {
                   arr.push(all[i]);
                 }
               }
