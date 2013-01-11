@@ -462,7 +462,7 @@ if(!window.console){
       elArr = [];
 
       //standard
-      if(!isStandard) {
+      if(isStandard) {
         context.each(function() {
           elArr = elArr.concat(iFn.objToArray(this.querySelectorAll(selector)));
         });
