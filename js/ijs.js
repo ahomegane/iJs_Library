@@ -327,6 +327,17 @@ if(!window.console){
       }
     },
 
+    /** Selector */
+
+    addClass: function(el, className) {
+      el.className += ' ' + className;
+    },
+
+    removeClass: function(el, className) {
+      var rClassName = new RegExp(' ?\\b' + className + '\\b ?', 'g');
+      el.className = el.className.replace(rClassName, '');
+    },
+
     /** Event */
     
     /**
